@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Channel Sentiment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Discord Sentiment</h1>
+            <button id="reset-button"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors">
+                Reset Statistics
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            <div class="card flex items-center">
+                <div class="icon-circle icon-circle-blue">
+                    <span class="icon-data"></span>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500">Total Messages</p>
+                    <p id="total-messages" class="text-2xl font-semibold text-slate-700">--</p>
+                </div>
+            </div>
+            <div class="card flex items-center">
+                <div class="icon-circle icon-circle-green">
+                    <span class="icon-thumbs-up"></span>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500">Positive</p>
+                    <p id="positive-percentage" class="text-2xl font-semibold text-slate-700">--%</p>
+                </div>
+            </div>
+            <div class="card flex items-center">
+                <div class="icon-circle icon-circle-red">
+                    <span class="icon-thumbs-down"></span>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500">Negative</p>
+                    <p id="negative-percentage" class="text-2xl font-semibold text-slate-700">--%</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-slate-600">Sentiment Breakdown</h2>
+            <div id="stacked-bar" class="stacked-bar-container">
+                <div id="bar-positive" class="bar-segment bar-positive" style="width: 0%;"></div>
+                <div id="bar-neutral" class="bar-segment bar-neutral" style="width: 0%;"></div>
+                <div id="bar-negative" class="bar-segment bar-negative" style="width: 0%;"></div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-color-box" style="background-color: #10b981;"></span> Positive (<span
+                        id="legend-positive">--%</span>)
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color-box" style="background-color: #94a3b8;"></span> Neutral (<span
+                        id="legend-neutral">--%</span>)
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color-box" style="background-color: #ef4444;"></span> Negative (<span
+                        id="legend-negative">--%</span>)
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-slate-600">Recent Messages (Sample)</h2>
+                <div id="message-counter" class="text-sm text-slate-500">
+                    Storing <span class="font-medium text-slate-700">0</span>/100 messages
+                </div>
+            </div>
+            <div class="max-h-96 overflow-y-auto border border-slate-200 rounded-md">
+                <div id="message-list">
+                    <p class="text-slate-500 p-4">Loading messages...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-box"></div>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

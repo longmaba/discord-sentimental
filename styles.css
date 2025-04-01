@@ -1,0 +1,197 @@
+@font-face {
+    font-family: 'LucideIcons';
+    src: url(https://cdn.jsdelivr.net/npm/lucide-static@latest/font/Lucide.ttf) format('truetype');
+    font-display: block;
+}
+
+/* Fallback SVG icons in case the font doesn't load */
+.icon-data {
+    width: 1.1rem;
+    height: 1.1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3'%3E%3C/polygon%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-thumbs-up {
+    width: 1.1rem;
+    height: 1.1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10v12'%3E%3C/path%3E%3Cpath d='M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-thumbs-down {
+    width: 1.1rem;
+    height: 1.1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 14V2'%3E%3C/path%3E%3Cpath d='M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-message-circle {
+    width: 1.1rem;
+    height: 1.1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.lucide {
+    font-family: 'LucideIcons', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1;
+    /* Add fallback for when the font doesn't load */
+    font-display: swap;
+}
+
+/* --- Base Styles --- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc; /* slate-50 */
+}
+
+.card {
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.07);
+    border: 1px solid #e2e8f0; /* slate-200 */
+    margin-bottom: 1.5rem;
+}
+
+.icon-circle {
+    padding: 0.5rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+}
+
+.icon-circle-blue {
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.icon-circle-green {
+    background-color: #ecfdf5;
+    color: #10b981;
+}
+
+.icon-circle-red {
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+
+.message-list-item {
+    border-bottom: 1px solid #f1f5f9;
+    padding: 0.75rem 0.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.message-list-item:last-child {
+    border-bottom: none;
+}
+
+#message-list .message-list-item:nth-child(odd) {
+    background-color: #f8fafc;
+}
+
+#message-box {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1f2937;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    font-size: 0.875rem;
+}
+
+.stacked-bar-container {
+    width: 100%;
+    height: 30px;
+    background-color: #f1f5f9;
+    border-radius: 0.375rem;
+    display: flex;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 0.75rem;
+}
+
+.bar-segment {
+    height: 100%;
+    transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bar-positive {
+    background-color: #10b981;
+}
+
+.bar-neutral {
+    background-color: #94a3b8;
+}
+
+.bar-negative {
+    background-color: #ef4444;
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.legend-color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 0.125rem;
+    margin-right: 0.5rem;
+}
+
+#message-counter {
+    transition: color 0.2s ease;
+}
+
+#message-counter span.text-red-500 {
+    color: #ef4444;
+}
+
+#reset-button {
+    transition: background-color 0.2s ease;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+#reset-button:active {
+    transform: scale(0.98);
+}
+
+/* ... (all other CSS rules from the original <style> tag) ... */ 
