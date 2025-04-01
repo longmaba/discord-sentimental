@@ -17,14 +17,14 @@ let demoCounter = 1; // Start from 1
 // --- Google Sheet Integration ---
 let lastProcessedRow = 0;
 const SPREADSHEET_ID = "16uwPZ-iJ9eVYFXKqr-ENTWB3tYb-sCmNVPnEmw8Wquw";
-const POLL_INTERVAL = 60000; // 10 seconds
+const POLL_INTERVAL = 10000; // 10 seconds
 
 function pollGoogleSheet() {
   // Create a timestamp to prevent caching
   const timestamp = new Date().getTime();
 
-  // Use the CSV export URL to access public Google Sheets data
-  const apiUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&_=${timestamp}`;
+  // Use the Sheet API with explicit JSON output
+  const apiUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1&headers=1&_=${timestamp}`;
 
   fetch(apiUrl)
     .then((response) => {
@@ -33,50 +33,121 @@ function pollGoogleSheet() {
       }
       return response.text();
     })
-    .then((csvData) => {
-      // Parse CSV data
-      const rows = csvData.split("\n").map((row) => row.split(","));
+    .then((jsonText) => {
+      // Log the first 100 characters to debug
+      console.log("Response prefix:", jsonText.substring(0, 100));
 
-      // Skip header row if it exists
-      const startRow = rows[0][0].toLowerCase() === "text" ? 1 : 0;
+      try {
+        // The response comes with a specific prefix that needs to be removed
+        // Format is: "/*O_o*/google.visualization.Query.setResponse({...});"
+        // We need to extract just the JSON object between the parentheses
 
-      // Process only new rows
-      if (rows.length > lastProcessedRow) {
-        // Loop through new rows
-        for (let i = Math.max(startRow, lastProcessedRow); i < rows.length; i++) {
-          if (rows[i] && rows[i].length >= 2) {
-            const text = rows[i][0].replace(/^"|"$/g, ""); // Remove quotes
-            // remove the \r from the sentiment
-            let sentiment = (rows[i][1] || "").replace(/\r/g, "").toLowerCase(); // Extract sentiment from column B
+        // Extract the JSON object from the response
+        const startMarker = "setResponse(";
+        const startIndex = jsonText.indexOf(startMarker);
+        if (startIndex === -1) {
+          throw new Error("Invalid response format: Missing setResponse marker");
+        }
 
-            if (sentiment === "null") {
-              continue;
-            }
+        // Find start of the actual JSON (after the marker)
+        const jsonStart = startIndex + startMarker.length;
 
-            // Add new message to dashboard
-            if (text) {
-              const newMessage = {
-                id: Date.now() + i, // Unique ID
-                text: text,
-                sentiment: sentiment,
-                createdTime: Date.now(),
-              };
+        // Find the closing parenthesis (end of JSON)
+        // We need to account for nested parentheses, so we'll use a simple counter
+        let openParens = 1;
+        let jsonEnd = jsonStart;
 
-              addNewMessage(newMessage);
-            }
+        for (let i = jsonStart; i < jsonText.length; i++) {
+          if (jsonText[i] === "(") openParens++;
+          if (jsonText[i] === ")") openParens--;
+
+          if (openParens === 0) {
+            jsonEnd = i;
+            break;
           }
         }
 
-        // Update last processed row
-        lastProcessedRow = rows.length;
-
-        // Update message counter
-        const counterElement = document.getElementById("message-counter");
-        if (counterElement) {
-          counterElement.innerHTML = `Storing <span class="font-medium ${recentMessages.length >= 90 ? "text-red-500" : "text-slate-700"}">${
-            recentMessages.length
-          }</span>/100 messages`;
+        if (openParens > 0) {
+          throw new Error("Invalid response format: Unclosed parentheses");
         }
+
+        // Extract the JSON string
+        const jsonString = jsonText.substring(jsonStart, jsonEnd);
+        console.log("Extracted JSON data start:", jsonString.substring(0, 50));
+
+        // Parse the extracted JSON
+        const data = JSON.parse(jsonString);
+
+        // Check if we have valid data
+        if (!data.table || !data.table.rows) {
+          throw new Error("Invalid data format received from Google Sheets");
+        }
+
+        const sheetData = data.table;
+        const rows = sheetData.rows;
+
+        // Process only new rows
+        if (rows.length > lastProcessedRow) {
+          console.log(`Processing rows ${lastProcessedRow + 1} to ${rows.length}`);
+
+          // Get column indices (first row might be headers)
+          const textColumnIndex = 0; // Assuming text is in column A
+          const sentimentColumnIndex = 1; // Assuming sentiment is in column B
+
+          // Process new rows only
+          for (let i = Math.max(1, lastProcessedRow); i < rows.length; i++) {
+            const rowData = rows[i].c;
+
+            // Skip empty rows
+            if (!rowData || !rowData[textColumnIndex] || !rowData[textColumnIndex].v === null) {
+              continue;
+            }
+
+            const text = rowData[textColumnIndex].v.toString().trim();
+            let sentiment = "";
+
+            // Get sentiment value if available
+            if (rowData[sentimentColumnIndex] && rowData[sentimentColumnIndex].v !== null) {
+              sentiment = rowData[sentimentColumnIndex].v.toString().toLowerCase().trim();
+            }
+
+            // Skip rows with null sentiment or empty text
+            if (sentiment === "null" || !text) {
+              continue;
+            }
+
+            // Validate sentiment value
+            if (!["positive", "negative", "neutral"].includes(sentiment)) {
+              sentiment = "neutral"; // Default to neutral if invalid
+            }
+
+            // Add new message to dashboard
+            const newMessage = {
+              id: Date.now() + i,
+              text: text,
+              sentiment: sentiment,
+              createdTime: Date.now(),
+            };
+
+            addNewMessage(newMessage);
+            console.log(`Added new message: "${text}" (${sentiment})`);
+          }
+
+          // Update last processed row
+          lastProcessedRow = rows.length;
+
+          // Update message counter
+          const counterElement = document.getElementById("message-counter");
+          if (counterElement) {
+            counterElement.innerHTML = `Storing <span class="font-medium ${recentMessages.length >= 90 ? "text-red-500" : "text-slate-700"}">${
+              recentMessages.length
+            }</span>/100 messages`;
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing Google Sheets data:", error);
+        console.log("Raw response excerpt:", jsonText.substring(0, 200) + "...");
+        throw error;
       }
     })
     .catch((error) => {
